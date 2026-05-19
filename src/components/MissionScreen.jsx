@@ -24,8 +24,9 @@ export default function MissionScreen({ missionId, moduleId, setView, setSelecte
   const [hintsUsedThisMission, setHintsUsedThisMission] = useState(0);
   const [wrongAttemptsThisMission, setWrongAttemptsThisMission] = useState(0);
   
-  // Easter egg modal
+  // Easter egg and security breach warning modals
   const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const [cheatingWarning, setCheatingWarning] = useState(false);
 
   // Sync state if missionId changes
   useEffect(() => {
@@ -36,7 +37,25 @@ export default function MissionScreen({ missionId, moduleId, setView, setSelecte
     setHintsUsedThisMission(0);
     setWrongAttemptsThisMission(0);
     setShowEasterEgg(false);
+    setCheatingWarning(false);
   }, [missionId]);
+
+  // Tab switch countermeasure: deduct XP on tab switch/blur in active challenge phase
+  useEffect(() => {
+    if (phase !== 'challenge') return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        dispatch({ type: 'SECURITY_VIOLATION' });
+        setCheatingWarning(true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [phase, dispatch]);
 
   if (!mission) {
     return (
@@ -128,7 +147,65 @@ export default function MissionScreen({ missionId, moduleId, setView, setSelecte
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px 40px', minHeight: '80vh' }}>
-      
+      {/* Cheating / Tab Tamper Detection Overlay */}
+      {cheatingWarning && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(255, 77, 77, 0.92)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <div className="glass-panel" style={{
+            maxWidth: '500px',
+            width: '100%',
+            padding: '30px',
+            textAlign: 'center',
+            border: '2px solid var(--red)',
+            boxShadow: 'var(--glow-red)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+            background: 'var(--bg-card)'
+          }}>
+            <span style={{ fontSize: '3rem', animation: 'blink 1s infinite' }}>🚨</span>
+            <h3 style={{ fontFamily: 'var(--font-pixel)', fontSize: '0.8rem', color: 'var(--red)', letterSpacing: '1px' }}>
+              SECURITY BREACH DETECTED
+            </h3>
+            <p style={{ fontSize: '0.85rem', color: '#ffffff', lineHeight: '1.6' }}>
+              Tab switching or loss of focus was detected during an active challenge!<br />
+              Cheating countermeasures have been engaged.
+            </p>
+            <div style={{
+              padding: '12px',
+              border: '1px dashed var(--red)',
+              background: 'rgba(255, 77, 77, 0.1)',
+              borderRadius: '6px',
+              fontFamily: 'var(--font-pixel)',
+              fontSize: '0.65rem',
+              color: 'var(--red)',
+              fontWeight: 'bold'
+            }}>
+              ⚠️ -15 XP SECURITY PENALTY APPLIED!
+            </div>
+            <button 
+              onClick={() => setCheatingWarning(false)} 
+              className="btn-primary" 
+              style={{ alignSelf: 'center', fontSize: '0.7rem', background: 'var(--red)', borderColor: 'var(--red)', color: '#fff', boxShadow: 'var(--glow-red)' }}
+            >
+              ACKNOWLEDGE & RESUME
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Easter Egg Overlay Modal */}
       {showEasterEgg && (
         <div style={{
@@ -314,6 +391,7 @@ export default function MissionScreen({ missionId, moduleId, setView, setSelecte
             }}
           >
             <ChallengeRunner 
+              key={currentChallenge.id}
               challenge={currentChallenge} 
               onAnswer={handleChallengeAnswer}
               onEasterEgg={handleEasterEgg}

@@ -3,16 +3,18 @@ import React, { useState } from 'react';
 export default function TraceOutput({ challenge, onAnswer }) {
   const [userOutput, setUserOutput] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!userOutput.trim() || isSubmitted) return;
 
     const normalize = (str) => str.replace(/\s+/g, '').trim().toLowerCase();
-    const isCorrect = normalize(userOutput) === normalize(challenge.correctAnswer);
+    const correct = normalize(userOutput) === normalize(challenge.correctAnswer);
 
+    setIsCorrect(correct);
     setIsSubmitted(true);
-    onAnswer(isCorrect);
+    onAnswer(correct);
   };
 
   return (
@@ -67,17 +69,32 @@ export default function TraceOutput({ challenge, onAnswer }) {
           />
         </div>
 
-        {isSubmitted && (
+        {isSubmitted && isCorrect && (
           <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-code)' }}>
             <span style={{ color: 'var(--text-muted)' }}>Correct Output: </span>
             <code style={{ color: 'var(--neon)', fontWeight: 'bold' }}>{challenge.correctAnswer}</code>
           </div>
         )}
 
-        {!isSubmitted && (
+        {!isSubmitted ? (
           <button type="submit" disabled={!userOutput.trim()} className="btn-primary" style={{ alignSelf: 'flex-start' }}>
             SUBMIT OUTPUT
           </button>
+        ) : (
+          !isCorrect && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSubmitted(false);
+                setIsCorrect(null);
+                setUserOutput('');
+              }}
+              className="btn-purple"
+              style={{ alignSelf: 'flex-start' }}
+            >
+              🔄 TRY AGAIN
+            </button>
+          )
         )}
       </form>
     </div>

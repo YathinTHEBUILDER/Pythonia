@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 export default function OrderSteps({ challenge, onAnswer }) {
   const [selectedSteps, setSelectedSteps] = useState([]); // Array of step IDs
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const availableSteps = challenge.steps.filter(
     (step) => !selectedSteps.includes(step.id)
@@ -41,12 +42,13 @@ export default function OrderSteps({ challenge, onAnswer }) {
   const handleSubmit = () => {
     if (selectedSteps.length !== challenge.steps.length || isSubmitted) return;
     
-    const isCorrect = selectedSteps.every(
+    const correct = selectedSteps.every(
       (id, idx) => id === challenge.correctOrder[idx]
     );
 
+    setIsCorrect(correct);
     setIsSubmitted(true);
-    onAnswer(isCorrect);
+    onAnswer(correct);
   };
 
   return (
@@ -185,7 +187,7 @@ export default function OrderSteps({ challenge, onAnswer }) {
 
       </div>
 
-      {!isSubmitted && (
+      {!isSubmitted ? (
         <button
           onClick={handleSubmit}
           disabled={selectedSteps.length !== challenge.steps.length}
@@ -194,6 +196,20 @@ export default function OrderSteps({ challenge, onAnswer }) {
         >
           SUBMIT ORDER
         </button>
+      ) : (
+        !isCorrect && (
+          <button
+            onClick={() => {
+              setIsSubmitted(false);
+              setIsCorrect(null);
+              setSelectedSteps([]);
+            }}
+            className="btn-purple"
+            style={{ alignSelf: 'flex-start', marginTop: '8px' }}
+          >
+            🔄 TRY AGAIN
+          </button>
+        )
       )}
     </div>
   );

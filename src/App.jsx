@@ -5,11 +5,12 @@ import ModuleScreen from './components/ModuleScreen';
 import MissionScreen from './components/MissionScreen';
 import Profile from './components/Profile';
 import Reference from './components/Reference';
+import Sandbox from './components/Sandbox';
 import { useGameState } from './state/gameState';
 
 export default function App() {
   const { state } = useGameState();
-  const [view, setView] = useState('dashboard'); // 'dashboard' | 'module' | 'mission' | 'profile' | 'reference'
+  const [view, setView] = useState('dashboard'); // 'dashboard' | 'module' | 'mission' | 'profile' | 'reference' | 'sandbox'
   const [selectedModuleId, setSelectedModuleId] = useState('m1');
   const [selectedMissionId, setSelectedMissionId] = useState(null);
 
@@ -113,6 +114,8 @@ export default function App() {
         return <Profile setView={setView} />;
       case 'reference':
         return <Reference setView={setView} />;
+      case 'sandbox':
+        return <Sandbox setView={setView} />;
       default:
         return (
           <div style={{ textAlign: 'center', marginTop: '40px', color: 'var(--red)' }}>
@@ -239,7 +242,7 @@ export default function App() {
             BUILT WITH 🐍 FOR VVCE PYTHON PROGRAMMING LAB (22CSE24)
           </span>
           <span style={{ fontSize: '0.6rem', opacity: 0.8 }}>
-            PAIR PROGRAMMED BY <span style={{ color: 'var(--neon)', fontWeight: 'bold' }}>YATHIN K</span> & <span style={{ color: 'var(--blue)', fontWeight: 'bold' }}>ANTIGRAVITY</span> • INSPIRED BY THE GITOPIA DESIGN SYSTEM
+            PAIR PROGRAMMED BY <span style={{ color: 'var(--neon)', fontWeight: 'bold' }}>YATHIN</span> & <span style={{ color: 'var(--blue)', fontWeight: 'bold' }}>ANTIGRAVITY</span> • INSPIRED BY THE GITOPIA DESIGN SYSTEM
           </span>
         </div>
       </footer>

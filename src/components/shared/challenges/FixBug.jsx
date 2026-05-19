@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 export default function FixBug({ challenge, onAnswer }) {
   const [userCorrection, setUserCorrection] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -11,10 +12,11 @@ export default function FixBug({ challenge, onAnswer }) {
     // Normalizing code spacing to avoid frustating syntax failures on minor spaces
     const normalize = (str) => str.replace(/\s+/g, ' ').trim().toLowerCase();
     
-    const isCorrect = normalize(userCorrection) === normalize(challenge.correctLine);
+    const correct = normalize(userCorrection) === normalize(challenge.correctLine);
     
+    setIsCorrect(correct);
     setIsSubmitted(true);
-    onAnswer(isCorrect);
+    onAnswer(correct);
   };
 
   return (
@@ -87,17 +89,32 @@ export default function FixBug({ challenge, onAnswer }) {
           />
         </div>
 
-        {isSubmitted && (
+        {isSubmitted && isCorrect && (
           <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-code)' }}>
             <span style={{ color: 'var(--text-muted)' }}>Expected: </span>
             <code style={{ color: 'var(--neon)', fontWeight: 'bold' }}>{challenge.correctLine}</code>
           </div>
         )}
 
-        {!isSubmitted && (
+        {!isSubmitted ? (
           <button type="submit" disabled={!userCorrection.trim()} className="btn-primary" style={{ alignSelf: 'flex-start' }}>
             SUBMIT FIX
           </button>
+        ) : (
+          !isCorrect && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSubmitted(false);
+                setIsCorrect(null);
+                setUserCorrection('');
+              }}
+              className="btn-purple"
+              style={{ alignSelf: 'flex-start' }}
+            >
+              🔄 TRY AGAIN
+            </button>
+          )
         )}
       </form>
     </div>

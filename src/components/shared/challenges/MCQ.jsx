@@ -114,7 +114,7 @@ export default function MCQ({ challenge, onAnswer }) {
         })}
       </div>
 
-      {!isSubmitted && (
+      {!isSubmitted ? (
         <button
           onClick={handleSubmit}
           disabled={selectedIdx === null}
@@ -123,6 +123,19 @@ export default function MCQ({ challenge, onAnswer }) {
         >
           CHECK ANSWER
         </button>
+      ) : (
+        selectedIdx !== challenge.correct && (
+          <button
+            onClick={() => {
+              setIsSubmitted(false);
+              setSelectedIdx(null);
+            }}
+            className="btn-purple"
+            style={{ alignSelf: 'flex-start', marginTop: '8px' }}
+          >
+            🔄 TRY AGAIN
+          </button>
+        )
       )}
     </div>
   );

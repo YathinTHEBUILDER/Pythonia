@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 export default function FillBlank({ challenge, onAnswer, onEasterEgg }) {
   const [answers, setAnswers] = useState(Array(challenge.blanks.length).fill(''));
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleInputChange = (index, value) => {
     const nextAnswers = [...answers];
@@ -25,12 +26,13 @@ export default function FillBlank({ challenge, onAnswer, onEasterEgg }) {
     }
 
     // Standard verification
-    const isCorrect = answers.every((ans, idx) => 
+    const correct = answers.every((ans, idx) => 
       ans.trim().toLowerCase() === challenge.blanks[idx].trim().toLowerCase()
     );
 
+    setIsCorrect(correct);
     setIsSubmitted(true);
-    onAnswer(isCorrect);
+    onAnswer(correct);
   };
 
   // Replace blanks with inputs
@@ -115,10 +117,25 @@ export default function FillBlank({ challenge, onAnswer, onEasterEgg }) {
           </div>
         </div>
 
-        {!isSubmitted && (
+        {!isSubmitted ? (
           <button type="submit" className="btn-primary" style={{ alignSelf: 'flex-start' }}>
             CHECK ANSWER
           </button>
+        ) : (
+          !isCorrect && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSubmitted(false);
+                setIsCorrect(null);
+                setAnswers(Array(challenge.blanks.length).fill(''));
+              }}
+              className="btn-purple"
+              style={{ alignSelf: 'flex-start' }}
+            >
+              🔄 TRY AGAIN
+            </button>
+          )
         )}
       </form>
     </div>

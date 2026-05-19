@@ -609,7 +609,7 @@ Controls in briefing phase only. In challenges, the trace is static (shows end s
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │  🐍 PYTHONIA     [====XP BAR====] 1200/1700 XP    ⚔️ Function Knight │
-│                              Yathin K                    [Profile]  │
+│                              Yathin                      [Profile]  │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -912,7 +912,7 @@ Use this for your GitHub repo:
 > Gamified Python learning for VTU 1BPLCSL207. 
 > Missions. XP. Badges. No boring theory.
 
-Built by Yathin K, 2nd sem CSE @ VVCE Mysuru
+Built by Yathin, 2nd sem CSE @ VVCE Mysuru
 Inspired by Gitopia (github.com/sathwikshetty0/Gitopia)
 
 ## Tech Stack

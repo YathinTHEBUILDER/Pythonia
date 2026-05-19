@@ -219,7 +219,18 @@ function gameReducer(state, action) {
       // Recalculate rank on XP loss
       newState.progress.rank = calculateRank(newState.progress.xp);
       break;
-      
+
+    case 'AWARD_SANDBOX_XP':
+      newState = {
+        ...state,
+        progress: {
+          ...state.progress,
+          xp: state.progress.xp + action.payload.xp
+        }
+      };
+      newState.progress.rank = calculateRank(newState.progress.xp);
+      break;
+
     case 'AWARD_EASTER_EGG':
       if (state.progress.badgesEarned.includes('antigravity_easter_egg')) {
         newState = state;

@@ -101,6 +101,17 @@ export default function Navbar({ currentView, setView }) {
               📖 SYNTAX
             </button>
             <button 
+              onClick={() => setView('sandbox')}
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.75rem',
+                borderColor: currentView === 'sandbox' ? 'var(--neon)' : 'var(--border)',
+                color: currentView === 'sandbox' ? 'var(--neon)' : 'var(--text)'
+              }}
+            >
+              💻 CODE ARENA
+            </button>
+            <button 
               onClick={() => setView('profile')}
               style={{
                 padding: '6px 12px',
