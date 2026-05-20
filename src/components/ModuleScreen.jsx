@@ -33,6 +33,42 @@ export default function ModuleScreen({ moduleId, setView, setSelectedMissionId }
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px 40px' }}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .mission-row-card {
+          transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+          transform: translateX(0);
+        }
+        .mission-row-card.unlocked:hover {
+          transform: translateX(6px) scale(1.002);
+          border-color: var(--blue) !important;
+          box-shadow: 0 4px 15px rgba(88, 166, 255, 0.15) !important;
+        }
+        .mission-row-card.completed.unlocked:hover {
+          border-color: var(--neon) !important;
+          box-shadow: 0 4px 15px rgba(57, 255, 20, 0.15) !important;
+        }
+        .badge-pill {
+          background: rgba(240, 192, 64, 0.08);
+          border: 1px solid rgba(240, 192, 64, 0.3);
+          border-radius: 4px;
+          padding: 4px 10px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          animation: badge-pulse 3s infinite;
+        }
+        @keyframes badge-pulse {
+          0%, 100% { box-shadow: 0 0 5px rgba(240, 192, 64, 0.1); }
+          50% { box-shadow: 0 0 12px rgba(240, 192, 64, 0.35); }
+        }
+        @keyframes ping-glow {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.7; box-shadow: 0 0 8px currentColor; }
+        }
+        .status-ping {
+          animation: ping-glow 2s ease-in-out infinite;
+        }
+      `}} />
       
       {/* Navigation & Header */}
       <div style={{
@@ -66,7 +102,10 @@ export default function ModuleScreen({ moduleId, setView, setSelectedMissionId }
           padding: '12px',
           background: 'rgba(255, 255, 255, 0.02)',
           borderRadius: '12px',
-          border: '1px solid var(--border)'
+          border: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>{module.icon}</span>
         <div>
           <span style={{ fontSize: '0.65rem', fontFamily: 'var(--font-pixel)', color: 'var(--blue)' }}>
@@ -97,7 +136,7 @@ export default function ModuleScreen({ moduleId, setView, setSelectedMissionId }
               <div
                 key={mission.id}
                 onClick={() => unlocked && handleEnterMission(mission.id)}
-                className={`glass-panel ${unlocked ? 'glow-neon-hover' : ''}`}
+                className={`glass-panel mission-row-card ${unlocked ? 'unlocked' : 'locked'} ${completed ? 'completed' : ''}`}
                 style={{
                   padding: '18px 24px',
                   display: 'flex',
@@ -107,34 +146,38 @@ export default function ModuleScreen({ moduleId, setView, setSelectedMissionId }
                   opacity: unlocked ? 1 : 0.5,
                   border: completed 
                     ? '1.5px solid var(--neon)' 
-                    : (unlocked ? '1px solid rgba(88,166,255,0.2)' : '1px solid var(--border)'),
-                  boxShadow: completed ? '0 0 10px rgba(57, 255, 20, 0.05)' : 'none',
-                  transition: 'all 0.2s ease',
+                    : (unlocked ? '1px solid rgba(88, 166, 255, 0.35)' : '1px solid rgba(255,255,255,0.03)'),
+                  boxShadow: completed ? '0 0 12px rgba(57, 255, 20, 0.08)' : 'none',
+                  transition: 'all 0.25s ease',
                   flexWrap: 'wrap',
-                  gap: '16px'
+                  gap: '16px',
+                  position: 'relative'
                 }}
               >
                 {/* Left Side: Mission Info */}
                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                   {/* Status indicator */}
-                  <span style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    border: completed 
-                      ? '1.5px solid var(--neon)' 
-                      : (unlocked ? '1.5px solid var(--blue)' : '1.5px solid var(--border)'),
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'var(--font-pixel)',
-                    fontSize: '0.65rem',
-                    color: completed ? 'var(--neon)' : (unlocked ? 'var(--blue)' : 'var(--text-muted)'),
-                    background: completed 
-                      ? 'rgba(57,255,20,0.05)' 
-                      : (unlocked ? 'rgba(88,166,255,0.05)' : 'transparent'),
-                    flexShrink: 0
-                  }}>
+                  <span 
+                    className={unlocked && !completed ? "status-ping" : ""}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      border: completed 
+                        ? '1.5px solid var(--neon)' 
+                        : (unlocked ? '1.5px solid var(--blue)' : '1.5px solid rgba(255,255,255,0.08)'),
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-pixel)',
+                      fontSize: '0.65rem',
+                      color: completed ? 'var(--neon)' : (unlocked ? 'var(--blue)' : 'var(--text-muted)'),
+                      background: completed 
+                        ? 'rgba(57,255,20,0.05)' 
+                        : (unlocked ? 'rgba(88,166,255,0.05)' : 'transparent'),
+                      flexShrink: 0
+                    }}
+                  >
                     {completed ? '✓' : (index + 1)}
                   </span>
                   
@@ -150,9 +193,10 @@ export default function ModuleScreen({ moduleId, setView, setSelectedMissionId }
                     
                     {/* Badge alert */}
                     {badge && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '6px' }}>
-                        <span style={{ fontSize: '0.65rem', color: 'var(--gold)', fontWeight: 'bold' }}>
-                          🏆 Awards Badge: {badge.title}
+                      <div className="badge-pill" style={{ marginTop: '6px' }}>
+                        <span style={{ fontSize: '0.85rem' }}>{badge.emoji}</span>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--gold)', fontFamily: 'var(--font-pixel)', fontWeight: 'bold' }}>
+                          AWARD: {badge.title.toUpperCase()}
                         </span>
                       </div>
                     )}

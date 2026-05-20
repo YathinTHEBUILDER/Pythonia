@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { REFERENCE_DATA } from '../data/referenceData';
 import { MODULES } from '../data/gameData';
+import CodeDisplay from './shared/CodeDisplay';
 
 export default function Reference({ setView }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -230,18 +231,10 @@ export default function Reference({ setView }) {
                   <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     Minimal code example:
                   </span>
-                  <pre style={{
-                    padding: '12px 16px',
-                    background: '#0a0e14',
-                    border: '1px solid var(--border)',
-                    borderRadius: '4px',
-                    color: 'var(--neon)',
-                    fontSize: '0.75rem',
-                    fontFamily: 'var(--font-code)',
-                    display: 'block',
-                    margin: 0,
-                    overflowX: 'auto'
-                  }}><code>{item.example}</code></pre>
+                  <CodeDisplay 
+                    code={item.example} 
+                    title={`${item.concept.toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').trim().replace(/(^_+|_+$)/g, '')}_example.py`} 
+                  />
                 </div>
 
               </div>
